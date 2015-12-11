@@ -11191,75 +11191,37 @@ luxe_utils_unifill__$Utf16_StringU16_$Impl_$.get_length = function(this1) {
 	return this1.length;
 };
 var net_dimnstudios_taprace_Main = function() {
-	this.friction = .8;
-	this.tapAccel = 500;
 	luxe_Game.call(this);
 };
 $hxClasses["net.dimnstudios.taprace.Main"] = net_dimnstudios_taprace_Main;
 net_dimnstudios_taprace_Main.__name__ = ["net","dimnstudios","taprace","Main"];
 net_dimnstudios_taprace_Main.__super__ = luxe_Game;
 net_dimnstudios_taprace_Main.prototype = $extend(luxe_Game.prototype,{
-	config: function(config) {
-		config.window.fullscreen = true;
-		return config;
-	}
-	,onwindowsized: function(e) {
-		Luxe.camera.set_viewport(new phoenix_Rectangle(0,0,e.event.x,e.event.y));
-	}
-	,ready: function() {
-		this.velocity1 = new phoenix_Vector();
-		this.velocity2 = new phoenix_Vector();
-		this.acceleration1 = new phoenix_Vector();
-		this.acceleration2 = new phoenix_Vector();
-		Luxe.input.bind_mouse("tap",1);
-		this.rect1 = new luxe_Sprite({ name : "racer_player1", pos : new phoenix_Vector(Luxe.core.screen.get_w() / 4,Luxe.core.screen.get_h()), depth : -2, centered : true, color : new phoenix_Color(0.4,0.4,0.4)});
-		this.rect2 = new luxe_Sprite({ name : "racer_player2", pos : new phoenix_Vector(Luxe.core.screen.get_w() - Luxe.core.screen.get_w() / 4,Luxe.core.screen.get_h()), depth : -2, centered : true, color : new phoenix_Color(0.4,0.4,0.4)});
-	}
-	,ontouchup: function(e) {
-		if(e.x < Luxe.core.screen.get_mid().x) {
-			var _g = this.acceleration1;
-			_g.set_y(_g.y + this.tapAccel);
-		}
-		if(e.x > Luxe.core.screen.get_mid().x) {
-			var _g1 = this.acceleration2;
-			_g1.set_y(_g1.y + this.tapAccel);
-		}
-	}
-	,onmouseup: function(e) {
-		if(e.x < Luxe.core.screen.get_mid().x) {
-			var _g = this.acceleration1;
-			_g.set_y(_g.y - this.tapAccel);
-		}
-		if(e.x > Luxe.core.screen.get_mid().x) {
-			var _g1 = this.acceleration2;
-			_g1.set_y(_g1.y - this.tapAccel);
-		}
+	ready: function() {
+		this.leftcharacterkey = snow_system_input_Keycodes.key_z;
+		this.leftitemkey = snow_system_input_Keycodes.key_x;
+		this.leftcharacterkey = snow_system_input_Keycodes.less;
+		this.leftitemkey = snow_system_input_Keycodes.greater;
 	}
 	,update: function(dt) {
-		var _g = this.rect1.get_pos();
-		_g.set_x(_g.x + this.velocity1.x * dt);
-		var _g1 = this.rect2.get_pos();
-		_g1.set_x(_g1.x + this.velocity2.x * dt);
-		var _g2 = this.rect1.get_pos();
-		_g2.set_y(_g2.y + this.velocity1.y * dt);
-		var _g3 = this.rect2.get_pos();
-		_g3.set_y(_g3.y + this.velocity2.y * dt);
-		var _g4 = this.velocity1;
-		_g4.set_x(_g4.x + (this.acceleration1.x - this.friction * this.velocity1.x) * dt);
-		var _g5 = this.velocity2;
-		_g5.set_x(_g5.x + (this.acceleration2.x - this.friction * this.velocity2.x) * dt);
-		var _g6 = this.velocity1;
-		_g6.set_y(_g6.y + (this.acceleration1.y - this.friction * this.velocity1.y) * dt);
-		var _g7 = this.velocity2;
-		_g7.set_y(_g7.y + (this.acceleration2.y - this.friction * this.velocity2.y) * dt);
-		var _g8 = this.acceleration1;
-		_g8.set_x(_g8.x * 0.1);
-		var _g9 = this.acceleration2;
-		_g9.set_x(_g9.x * 0.1);
-		var _g10 = this.acceleration1;
-		_g10.set_y(_g10.y * 0.1);
-		var _g11 = this.acceleration2;
-		_g11.set_y(_g11.y * 0.1);
+	}
+	,onkeyup: function(event) {
+		if(event.keycode == this.leftcharacterkey) this.leftcharacter();
+		if(event.keycode == this.leftitemkey) this.leftitem();
+		if(event.keycode == this.rightcharacterkey) this.rightcharacter();
+		if(event.keycode == this.rightitemkey) this.rightitem();
+	}
+	,ontouchup: function(event) {
+		if(this.leftcharactersprite.point_inside(event.pos)) this.leftcharacter();
+		if(this.rightcharactersprite.point_inside(event.pos)) this.rightcharacter();
+	}
+	,leftcharacter: function() {
+	}
+	,leftitem: function() {
+	}
+	,rightcharacter: function() {
+	}
+	,rightitem: function() {
 	}
 	,__class__: net_dimnstudios_taprace_Main
 });

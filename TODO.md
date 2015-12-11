@@ -2,10 +2,12 @@
 -----
 
 * [ ] MVP
-    - [ ] Input
-        + [ ] Send event with each input, that way remapping will be trivial
-        + [ ] Keyboard for desktop
-        + [ ] Touch for mobile
+    - [x] Input
+        ~~+ [ ] Send event with each input, that way remapping will be trivial~~
+        + [x] ~~Keyboard~~ Remappable keys for desktop
+        + [x] Touch for mobile, does not need to change
+        ~~+ [ ] Buttons for menu on desktop/mobile~~
+        + [x] Seperate input/action, for easy input changing
     - [ ] Physics
         + [ ] Nape, apply impulse when character tapped
     - [ ] Gameplay
@@ -15,6 +17,7 @@
             * [ ] Auto Tap: Impulse is applied every x milliseconds automatically
             * [ ] Distract: Blocks other players view of the screen
 * [ ] Alpha
+    - [ ] Levels
     - [ ] Menu
         + [ ] Level select
         + [ ] High score
