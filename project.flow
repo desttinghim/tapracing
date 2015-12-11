@@ -1,0 +1,27 @@
+{
+
+  project : {
+    name : 'net.dimnstudios.taprace',
+    version : '0.0.1',
+    author : 'desttinghim',
+
+    app : {
+      name : 'Tap-Race',
+      package : 'net.dimnstudios.taprace',
+      main: 'net.dimnstudios.taprace.Main'
+    },
+
+    build : {
+      dependencies : {
+        luxe : '*',
+        // castle : '*'
+      }
+    },
+
+    files : {
+      assets : 'assets/'
+    }
+
+  }
+
+}
