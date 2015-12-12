@@ -7,7 +7,12 @@
         + [x] ~~Keyboard~~ Remappable keys for desktop
         + [x] Touch for mobile, does not need to change
         ~~+ [ ] Buttons for menu on desktop/mobile~~
-        + [x] Seperate input/action, for easy input changing
+        + [x] Separate input/action, for easy input changing
+    - [x] Character entities
+    - [ ] Separate main and racing specific code
+    - [ ] Split Screen Camera
+        + [ ] Actual camera code      
+        + [ ] Input changes
     - [ ] Physics
         + [ ] Nape, apply impulse when character tapped
     - [ ] Gameplay

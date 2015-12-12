@@ -1,74 +1,36 @@
 package net.dimnstudios.taprace;
 
-import luxe.Vector;
 import luxe.Input;
-import luxe.Sprite;
-
-import phoenix.geometry.QuadGeometry;
+import luxe.States;
 
 class Main extends luxe.Game 
 {
-	//Variables for remappable keys
-	var leftcharacterkey	: Int;
-	var leftitemkey			: Int;
-	var rightcharacterkey	: Int;
-	var rightitemkey		: Int;
 
-	//Player sprites
-	var leftcharactersprite		: Sprite;
-	var rightcharactersprite	: Sprite;
+	//Variables for remappable keys
+	public static var leftcharacterkey	: Int;
+	public static var leftitemkey		: Int;
+	public static var rightcharacterkey	: Int;
+	public static var rightitemkey		: Int;
+
+	var state 	: States;
 
 	override function ready()
 	{
-		leftcharacterkey = Key.key_z;
-		leftitemkey = Key.key_x;
-		leftcharacterkey = Key.less;
-		leftitemkey = Key.greater;
+		leftcharacterkey 	= Key.key_z;
+		leftitemkey 		= Key.key_x;
+		rightcharacterkey 	= Key.comma;
+		rightitemkey 		= Key.period;
+
+		state = new States();
+
+		state.add(new Level({name: "level" }));
+
+		state.set("level");
 	} //ready
 
 	override function update( dt:Float )
 	{
 
 	} //update
-
-	override function onkeyup( event:KeyEvent )
-	{
-		if(event.keycode == leftcharacterkey) leftcharacter();
-		if(event.keycode == leftitemkey) leftitem();
-		if(event.keycode == rightcharacterkey) rightcharacter();
-		if(event.keycode == rightitemkey) rightitem();
-	} //onkeyup
-
-	override function ontouchup( event:TouchEvent )
-	{
-		if(leftcharactersprite.point_inside(event.pos))
-		{
-			leftcharacter();
-		}
-		if(rightcharactersprite.point_inside(event.pos))
-		{
-			rightcharacter();
-		}
-	} //ontouchup
-
-	public function leftcharacter()
-	{
-
-	} //leftcharacter
-
-	public function leftitem()
-	{
-
-	} //leftitem
-
-	public function rightcharacter()
-	{
-
-	} //rightcharacter
-
-	public function rightitem()
-	{
-
-	} //rightitem
 
 } //Main

@@ -6772,6 +6772,579 @@ luxe_Sprite.prototype = $extend(luxe_Visual.prototype,{
 	,__class__: luxe_Sprite
 	,__properties__: $extend(luxe_Visual.prototype.__properties__,{set_uv:"set_uv",set_flipy:"set_flipy",set_flipx:"set_flipx",set_centered:"set_centered"})
 });
+var luxe_State = function(_options) {
+	this.inited = false;
+	this.enabled = false;
+	this.active = false;
+	luxe_ID.call(this,_options.name);
+};
+$hxClasses["luxe.State"] = luxe_State;
+luxe_State.__name__ = ["luxe","State"];
+luxe_State.__super__ = luxe_ID;
+luxe_State.prototype = $extend(luxe_ID.prototype,{
+	enable: function(_enable_with) {
+		this.machine.enable(this.name,_enable_with);
+	}
+	,disable: function(_disable_with) {
+		this.machine.disable(this.name,_disable_with);
+	}
+	,destroy: function() {
+		this.machine.kill(this.name);
+	}
+	,init: function() {
+	}
+	,update: function(dt) {
+	}
+	,onfixedupdate: function() {
+	}
+	,onleave: function(d) {
+	}
+	,onenter: function(d) {
+	}
+	,onenabled: function(d) {
+	}
+	,ondisabled: function(d) {
+	}
+	,onadded: function() {
+	}
+	,onremoved: function() {
+	}
+	,onrender: function() {
+	}
+	,onprerender: function() {
+	}
+	,onpostrender: function() {
+	}
+	,onreset: function() {
+	}
+	,ondestroy: function() {
+	}
+	,onkeyup: function(event) {
+	}
+	,onkeydown: function(event) {
+	}
+	,ontextinput: function(event) {
+	}
+	,oninputdown: function(name,event) {
+	}
+	,oninputup: function(name,event) {
+	}
+	,onmousedown: function(event) {
+	}
+	,onmouseup: function(event) {
+	}
+	,onmousemove: function(event) {
+	}
+	,onmousewheel: function(event) {
+	}
+	,ontouchdown: function(event) {
+	}
+	,ontouchup: function(event) {
+	}
+	,ontouchmove: function(event) {
+	}
+	,ongamepadup: function(event) {
+	}
+	,ongamepaddown: function(event) {
+	}
+	,ongamepadaxis: function(event) {
+	}
+	,ongamepaddevice: function(event) {
+	}
+	,onwindowmoved: function(event) {
+	}
+	,onwindowresized: function(event) {
+	}
+	,onwindowsized: function(event) {
+	}
+	,onwindowminimized: function(event) {
+	}
+	,onwindowrestored: function(event) {
+	}
+	,_init: function() {
+		if(!this.inited) {
+			this.inited = true;
+			this.init();
+		}
+	}
+	,__class__: luxe_State
+});
+var luxe_States = function(_options) {
+	this._state_count = 0;
+	this.active_count = 0;
+	var _name = "";
+	if(_options != null && _options.name != null) _name = _options.name;
+	luxe_Objects.call(this,_name == ""?Luxe.utils.uniqueid():_name);
+	this._states = new haxe_ds_StringMap();
+	this.active_states = [];
+	Luxe.core.emitter.on(2,$bind(this,this.init));
+	Luxe.core.emitter.on(8,$bind(this,this.ondestroy));
+	Luxe.core.emitter.on(6,$bind(this,this.update));
+	Luxe.core.emitter.on(9,$bind(this,this.prerender));
+	Luxe.core.emitter.on(11,$bind(this,this.postrender));
+	Luxe.core.emitter.on(10,$bind(this,this.render));
+	Luxe.core.emitter.on(12,$bind(this,this.keydown));
+	Luxe.core.emitter.on(13,$bind(this,this.keyup));
+	Luxe.core.emitter.on(14,$bind(this,this.textinput));
+	Luxe.core.emitter.on(16,$bind(this,this.inputup));
+	Luxe.core.emitter.on(15,$bind(this,this.inputdown));
+	Luxe.core.emitter.on(18,$bind(this,this.mouseup));
+	Luxe.core.emitter.on(17,$bind(this,this.mousedown));
+	Luxe.core.emitter.on(19,$bind(this,this.mousemove));
+	Luxe.core.emitter.on(20,$bind(this,this.mousewheel));
+	Luxe.core.emitter.on(22,$bind(this,this.touchup));
+	Luxe.core.emitter.on(21,$bind(this,this.touchdown));
+	Luxe.core.emitter.on(23,$bind(this,this.touchmove));
+	Luxe.core.emitter.on(26,$bind(this,this.gamepadup));
+	Luxe.core.emitter.on(25,$bind(this,this.gamepaddown));
+	Luxe.core.emitter.on(24,$bind(this,this.gamepadaxis));
+	Luxe.core.emitter.on(27,$bind(this,this.gamepaddevice));
+	Luxe.core.emitter.on(29,$bind(this,this.windowmoved));
+	Luxe.core.emitter.on(30,$bind(this,this.windowresized));
+	Luxe.core.emitter.on(31,$bind(this,this.windowsized));
+	Luxe.core.emitter.on(32,$bind(this,this.windowminimized));
+	Luxe.core.emitter.on(33,$bind(this,this.windowrestored));
+};
+$hxClasses["luxe.States"] = luxe_States;
+luxe_States.__name__ = ["luxe","States"];
+luxe_States.__super__ = luxe_Objects;
+luxe_States.prototype = $extend(luxe_Objects.prototype,{
+	add: function(_state) {
+		this._states.set(_state.name,_state);
+		this._state_count++;
+		_state.machine = this;
+		_state.onadded();
+		if(Luxe.core.inited) {
+			if(!_state.inited) {
+				_state.inited = true;
+				_state.init();
+			}
+		}
+		return _state;
+	}
+	,remove: function(_name,_leave_with) {
+		if(this._states.exists(_name)) {
+			var _state = this._states.get(_name);
+			if(_state != null) {
+				if(_state.active) {
+					this.leave(_state,_leave_with);
+					if(_state == this.current_state) this.current_state = null;
+				}
+				if(_state.enabled) this.disable(_state.name);
+				_state.onremoved();
+				this._states.remove(_name);
+				this._state_count--;
+			}
+			return _state;
+		}
+		return null;
+	}
+	,kill: function(_name) {
+		if(this._state_count > 0) {
+			if(this._states.exists(_name)) {
+				var _state = this.remove(_name);
+				if(_state != null) _state.ondestroy();
+			}
+		}
+	}
+	,enabled: function(_name) {
+		if(this._state_count == 0) return false;
+		var state = this._states.get(_name);
+		if(state != null) return state.enabled;
+		return false;
+	}
+	,enable: function(_name,_enable_with) {
+		if(this._state_count == 0) return;
+		var state = this._states.get(_name);
+		if(state != null) {
+			state.onenabled(_enable_with);
+			state.active = true;
+			state.enabled = true;
+			this.active_states.push(state);
+			this.active_count++;
+			null;
+		}
+	}
+	,disable: function(_name,_disable_with) {
+		if(this._state_count == 0) return;
+		var state = this._states.get(_name);
+		if(state != null) {
+			state.ondisabled(_disable_with);
+			state.active = false;
+			state.enabled = false;
+			HxOverrides.remove(this.active_states,state);
+			this.active_count--;
+			null;
+		}
+	}
+	,enter: function(_state,_enter_with) {
+		_state.onenter(_enter_with);
+		this.active_states.push(_state);
+		this.active_count++;
+		_state.active = true;
+	}
+	,leave: function(_state,_leave_with) {
+		_state.active = false;
+		HxOverrides.remove(this.active_states,_state);
+		this.active_count--;
+		_state.onleave(_leave_with);
+	}
+	,set: function(name,_enter_with,_leave_with) {
+		if(!this._states.exists(name)) {
+			haxe_Log.trace("   i / states / " + ("cannot find state named " + name + ", is it added to this state machine?"),{ fileName : "States.hx", lineNumber : 317, className : "luxe.States", methodName : "set"});
+			return false;
+		}
+		this.unset(_leave_with);
+		this.current_state = this._states.get(name);
+		this.enter(this.current_state,_enter_with);
+		return true;
+	}
+	,unset: function(_leave_with) {
+		if(this.current_state != null) {
+			this.leave(this.current_state,_leave_with);
+			this.current_state = null;
+		}
+	}
+	,destroy: function() {
+		if(this._state_count > 0) {
+			var $it0 = this._states.iterator();
+			while( $it0.hasNext() ) {
+				var state = $it0.next();
+				state.destroy();
+			}
+		}
+		Luxe.core.emitter.off(2,$bind(this,this.init));
+		Luxe.core.emitter.off(8,$bind(this,this.ondestroy));
+		Luxe.core.emitter.off(6,$bind(this,this.update));
+		Luxe.core.emitter.off(9,$bind(this,this.prerender));
+		Luxe.core.emitter.off(11,$bind(this,this.postrender));
+		Luxe.core.emitter.off(10,$bind(this,this.render));
+		Luxe.core.emitter.off(12,$bind(this,this.keydown));
+		Luxe.core.emitter.off(13,$bind(this,this.keyup));
+		Luxe.core.emitter.off(14,$bind(this,this.textinput));
+		Luxe.core.emitter.off(16,$bind(this,this.inputup));
+		Luxe.core.emitter.off(15,$bind(this,this.inputdown));
+		Luxe.core.emitter.off(18,$bind(this,this.mouseup));
+		Luxe.core.emitter.off(17,$bind(this,this.mousedown));
+		Luxe.core.emitter.off(19,$bind(this,this.mousemove));
+		Luxe.core.emitter.off(20,$bind(this,this.mousewheel));
+		Luxe.core.emitter.off(22,$bind(this,this.touchup));
+		Luxe.core.emitter.off(21,$bind(this,this.touchdown));
+		Luxe.core.emitter.off(23,$bind(this,this.touchmove));
+		Luxe.core.emitter.off(26,$bind(this,this.gamepadup));
+		Luxe.core.emitter.off(25,$bind(this,this.gamepaddown));
+		Luxe.core.emitter.off(24,$bind(this,this.gamepadaxis));
+		Luxe.core.emitter.off(27,$bind(this,this.gamepaddevice));
+		Luxe.core.emitter.off(29,$bind(this,this.windowmoved));
+		Luxe.core.emitter.off(30,$bind(this,this.windowresized));
+		Luxe.core.emitter.off(31,$bind(this,this.windowsized));
+		Luxe.core.emitter.off(32,$bind(this,this.windowminimized));
+		Luxe.core.emitter.off(33,$bind(this,this.windowrestored));
+		this.emit(8);
+	}
+	,init: function(_) {
+		if(this._state_count > 0) {
+			var $it0 = this._states.iterator();
+			while( $it0.hasNext() ) {
+				var state = $it0.next();
+				if(!state.inited) {
+					state.inited = true;
+					state.init();
+				}
+			}
+		}
+	}
+	,reset: function(_) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.onreset();
+			}
+		}
+	}
+	,update: function(dt) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.update(dt);
+			}
+		}
+	}
+	,ondestroy: function(_) {
+		this.destroy();
+	}
+	,render: function(_) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.onrender();
+			}
+		}
+	}
+	,prerender: function(_) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.onprerender();
+			}
+		}
+	}
+	,postrender: function(_) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.onpostrender();
+			}
+		}
+	}
+	,keydown: function(e) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.onkeydown(e);
+			}
+		}
+	}
+	,keyup: function(e) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.onkeyup(e);
+			}
+		}
+	}
+	,textinput: function(e) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.ontextinput(e);
+			}
+		}
+	}
+	,inputup: function(_event) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.oninputup(_event.name,_event.event);
+			}
+		}
+	}
+	,inputdown: function(_event) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.oninputdown(_event.name,_event.event);
+			}
+		}
+	}
+	,mousedown: function(e) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.onmousedown(e);
+			}
+		}
+	}
+	,mousewheel: function(e) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.onmousewheel(e);
+			}
+		}
+	}
+	,mouseup: function(e) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.onmouseup(e);
+			}
+		}
+	}
+	,mousemove: function(e) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.onmousemove(e);
+			}
+		}
+	}
+	,touchdown: function(e) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.ontouchdown(e);
+			}
+		}
+	}
+	,touchup: function(e) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.ontouchup(e);
+			}
+		}
+	}
+	,touchmove: function(e) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.ontouchmove(e);
+			}
+		}
+	}
+	,gamepadaxis: function(e) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.ongamepadaxis(e);
+			}
+		}
+	}
+	,gamepadup: function(e) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.ongamepadup(e);
+			}
+		}
+	}
+	,gamepaddown: function(e) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.ongamepaddown(e);
+			}
+		}
+	}
+	,gamepaddevice: function(e) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.ongamepaddevice(e);
+			}
+		}
+	}
+	,windowmoved: function(e) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.onwindowmoved(e);
+			}
+		}
+	}
+	,windowresized: function(e) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.onwindowresized(e);
+			}
+		}
+	}
+	,windowsized: function(e) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.onwindowsized(e);
+			}
+		}
+	}
+	,windowminimized: function(e) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.onwindowminimized(e);
+			}
+		}
+	}
+	,windowrestored: function(e) {
+		if(this.active_count > 0) {
+			var _g = 0;
+			var _g1 = this.active_states;
+			while(_g < _g1.length) {
+				var state = _g1[_g];
+				++_g;
+				state.onwindowrestored(e);
+			}
+		}
+	}
+	,__class__: luxe_States
+});
 var luxe_Text = function(_options) {
 	this.text_options = _options;
 	this.text_bounds = new phoenix_Rectangle();
@@ -11190,6 +11763,45 @@ luxe_utils_unifill__$Utf16_StringU16_$Impl_$._new = function(s) {
 luxe_utils_unifill__$Utf16_StringU16_$Impl_$.get_length = function(this1) {
 	return this1.length;
 };
+var net_dimnstudios_taprace_Level = function(_options) {
+	luxe_State.call(this,_options);
+};
+$hxClasses["net.dimnstudios.taprace.Level"] = net_dimnstudios_taprace_Level;
+net_dimnstudios_taprace_Level.__name__ = ["net","dimnstudios","taprace","Level"];
+net_dimnstudios_taprace_Level.__super__ = luxe_State;
+net_dimnstudios_taprace_Level.prototype = $extend(luxe_State.prototype,{
+	onenter: function(_) {
+		this.leftcharactersprite = new luxe_Sprite({ name : "left", pos : new phoenix_Vector(Luxe.core.screen.get_w() / 4,Luxe.core.screen.get_mid().y), color : new phoenix_Color().rgb(16337668), size : new phoenix_Vector(128,128)});
+		this.rightcharactersprite = new luxe_Sprite({ name : "right", pos : new phoenix_Vector(Luxe.core.screen.get_w() - Luxe.core.screen.get_w() / 4,Luxe.core.screen.get_mid().y), color : new phoenix_Color().rgb(4978948), size : new phoenix_Vector(128,128)});
+	}
+	,onleave: function(_) {
+	}
+	,update: function(dt) {
+	}
+	,onkeyup: function(event) {
+		if(event.keycode == net_dimnstudios_taprace_Main.leftcharacterkey) this.leftcharacter();
+		if(event.keycode == net_dimnstudios_taprace_Main.leftitemkey) this.leftitem();
+		if(event.keycode == net_dimnstudios_taprace_Main.rightcharacterkey) this.rightcharacter();
+		if(event.keycode == net_dimnstudios_taprace_Main.rightitemkey) this.rightitem();
+	}
+	,ontouchup: function(event) {
+		if(this.leftcharactersprite.point_inside(event.pos)) this.leftcharacter();
+		if(this.rightcharactersprite.point_inside(event.pos)) this.rightcharacter();
+	}
+	,leftcharacter: function() {
+		haxe_Log.trace("left character",{ fileName : "Level.hx", lineNumber : 65, className : "net.dimnstudios.taprace.Level", methodName : "leftcharacter"});
+	}
+	,leftitem: function() {
+		haxe_Log.trace("left item",{ fileName : "Level.hx", lineNumber : 70, className : "net.dimnstudios.taprace.Level", methodName : "leftitem"});
+	}
+	,rightcharacter: function() {
+		haxe_Log.trace("right character",{ fileName : "Level.hx", lineNumber : 75, className : "net.dimnstudios.taprace.Level", methodName : "rightcharacter"});
+	}
+	,rightitem: function() {
+		haxe_Log.trace("right item",{ fileName : "Level.hx", lineNumber : 80, className : "net.dimnstudios.taprace.Level", methodName : "rightitem"});
+	}
+	,__class__: net_dimnstudios_taprace_Level
+});
 var net_dimnstudios_taprace_Main = function() {
 	luxe_Game.call(this);
 };
@@ -11198,30 +11810,15 @@ net_dimnstudios_taprace_Main.__name__ = ["net","dimnstudios","taprace","Main"];
 net_dimnstudios_taprace_Main.__super__ = luxe_Game;
 net_dimnstudios_taprace_Main.prototype = $extend(luxe_Game.prototype,{
 	ready: function() {
-		this.leftcharacterkey = snow_system_input_Keycodes.key_z;
-		this.leftitemkey = snow_system_input_Keycodes.key_x;
-		this.leftcharacterkey = snow_system_input_Keycodes.less;
-		this.leftitemkey = snow_system_input_Keycodes.greater;
+		net_dimnstudios_taprace_Main.leftcharacterkey = snow_system_input_Keycodes.key_z;
+		net_dimnstudios_taprace_Main.leftitemkey = snow_system_input_Keycodes.key_x;
+		net_dimnstudios_taprace_Main.rightcharacterkey = snow_system_input_Keycodes.comma;
+		net_dimnstudios_taprace_Main.rightitemkey = snow_system_input_Keycodes.period;
+		this.state = new luxe_States();
+		this.state.add(new net_dimnstudios_taprace_Level({ name : "level"}));
+		this.state.set("level");
 	}
 	,update: function(dt) {
-	}
-	,onkeyup: function(event) {
-		if(event.keycode == this.leftcharacterkey) this.leftcharacter();
-		if(event.keycode == this.leftitemkey) this.leftitem();
-		if(event.keycode == this.rightcharacterkey) this.rightcharacter();
-		if(event.keycode == this.rightitemkey) this.rightitem();
-	}
-	,ontouchup: function(event) {
-		if(this.leftcharactersprite.point_inside(event.pos)) this.leftcharacter();
-		if(this.rightcharactersprite.point_inside(event.pos)) this.rightcharacter();
-	}
-	,leftcharacter: function() {
-	}
-	,leftitem: function() {
-	}
-	,rightcharacter: function() {
-	}
-	,rightitem: function() {
 	}
 	,__class__: net_dimnstudios_taprace_Main
 });
