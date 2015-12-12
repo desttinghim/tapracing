@@ -11771,8 +11771,17 @@ net_dimnstudios_taprace_Level.__name__ = ["net","dimnstudios","taprace","Level"]
 net_dimnstudios_taprace_Level.__super__ = luxe_State;
 net_dimnstudios_taprace_Level.prototype = $extend(luxe_State.prototype,{
 	onenter: function(_) {
-		this.leftcharactersprite = new luxe_Sprite({ name : "left", pos : new phoenix_Vector(Luxe.core.screen.get_w() / 4,Luxe.core.screen.get_mid().y), color : new phoenix_Color().rgb(16337668), size : new phoenix_Vector(128,128)});
-		this.rightcharactersprite = new luxe_Sprite({ name : "right", pos : new phoenix_Vector(Luxe.core.screen.get_w() - Luxe.core.screen.get_w() / 4,Luxe.core.screen.get_mid().y), color : new phoenix_Color().rgb(4978948), size : new phoenix_Vector(128,128)});
+		this.camera_left = new luxe_Camera({ name : "camera_left"});
+		this.camera_right = new luxe_Camera({ name : "camera_right"});
+		this.batcher_left = Luxe.renderer.create_batcher({ name : "batcher_left", camera : this.camera_left.view});
+		this.batcher_right = Luxe.renderer.create_batcher({ name : "batcher_right", camera : this.camera_right.view});
+		this.camera_left.set_viewport(new phoenix_Rectangle(0,0,net_dimnstudios_taprace_Main.midx,Luxe.core.screen.get_h()));
+		this.camera_right.set_viewport(new phoenix_Rectangle(net_dimnstudios_taprace_Main.midx,0,net_dimnstudios_taprace_Main.midx,Luxe.core.screen.get_h()));
+		this.camera_right.get_pos().set_x(net_dimnstudios_taprace_Main.midx / 2);
+		this.leftcharactersprite = new luxe_Sprite({ name : "left", pos : new phoenix_Vector(Luxe.core.screen.get_w() / 4,Luxe.core.screen.get_mid().y), color : new phoenix_Color().rgb(16337668), size : new phoenix_Vector(64,64), batcher : this.batcher_left});
+		this.batcher_right.add(this.leftcharactersprite.geometry);
+		this.rightcharactersprite = new luxe_Sprite({ name : "right", pos : new phoenix_Vector(net_dimnstudios_taprace_Main.midx,Luxe.core.screen.get_mid().y), color : new phoenix_Color().rgb(4978948), size : new phoenix_Vector(64,64), batcher : this.batcher_left});
+		this.batcher_right.add(this.rightcharactersprite.geometry);
 	}
 	,onleave: function(_) {
 	}
@@ -11789,16 +11798,16 @@ net_dimnstudios_taprace_Level.prototype = $extend(luxe_State.prototype,{
 		if(this.rightcharactersprite.point_inside(event.pos)) this.rightcharacter();
 	}
 	,leftcharacter: function() {
-		haxe_Log.trace("left character",{ fileName : "Level.hx", lineNumber : 65, className : "net.dimnstudios.taprace.Level", methodName : "leftcharacter"});
+		haxe_Log.trace("left character",{ fileName : "Level.hx", lineNumber : 105, className : "net.dimnstudios.taprace.Level", methodName : "leftcharacter"});
 	}
 	,leftitem: function() {
-		haxe_Log.trace("left item",{ fileName : "Level.hx", lineNumber : 70, className : "net.dimnstudios.taprace.Level", methodName : "leftitem"});
+		haxe_Log.trace("left item",{ fileName : "Level.hx", lineNumber : 110, className : "net.dimnstudios.taprace.Level", methodName : "leftitem"});
 	}
 	,rightcharacter: function() {
-		haxe_Log.trace("right character",{ fileName : "Level.hx", lineNumber : 75, className : "net.dimnstudios.taprace.Level", methodName : "rightcharacter"});
+		haxe_Log.trace("right character",{ fileName : "Level.hx", lineNumber : 115, className : "net.dimnstudios.taprace.Level", methodName : "rightcharacter"});
 	}
 	,rightitem: function() {
-		haxe_Log.trace("right item",{ fileName : "Level.hx", lineNumber : 80, className : "net.dimnstudios.taprace.Level", methodName : "rightitem"});
+		haxe_Log.trace("right item",{ fileName : "Level.hx", lineNumber : 120, className : "net.dimnstudios.taprace.Level", methodName : "rightitem"});
 	}
 	,__class__: net_dimnstudios_taprace_Level
 });
@@ -11814,6 +11823,8 @@ net_dimnstudios_taprace_Main.prototype = $extend(luxe_Game.prototype,{
 		net_dimnstudios_taprace_Main.leftitemkey = snow_system_input_Keycodes.key_x;
 		net_dimnstudios_taprace_Main.rightcharacterkey = snow_system_input_Keycodes.comma;
 		net_dimnstudios_taprace_Main.rightitemkey = snow_system_input_Keycodes.period;
+		net_dimnstudios_taprace_Main.midx = Luxe.core.screen.get_mid().x;
+		net_dimnstudios_taprace_Main.midy = Luxe.core.screen.get_mid().y;
 		this.state = new luxe_States();
 		this.state.add(new net_dimnstudios_taprace_Level({ name : "level"}));
 		this.state.set("level");

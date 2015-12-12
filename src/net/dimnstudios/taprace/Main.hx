@@ -12,6 +12,9 @@ class Main extends luxe.Game
 	public static var rightcharacterkey	: Int;
 	public static var rightitemkey		: Int;
 
+	public static var midx;
+	public static var midy;
+
 	var state 	: States;
 
 	override function ready()
@@ -20,6 +23,9 @@ class Main extends luxe.Game
 		leftitemkey 		= Key.key_x;
 		rightcharacterkey 	= Key.comma;
 		rightitemkey 		= Key.period;
+
+		midx = Luxe.screen.mid.x;
+		midy = Luxe.screen.mid.y;
 
 		state = new States();
 

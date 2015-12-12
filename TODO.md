@@ -9,7 +9,7 @@
         ~~+ [ ] Buttons for menu on desktop/mobile~~
         + [x] Separate input/action, for easy input changing
     - [x] Character entities
-    - [ ] Separate main and racing specific code
+    - [x] Separate main and racing specific code
     - [ ] Split Screen Camera
         + [ ] Actual camera code      
         + [ ] Input changes
