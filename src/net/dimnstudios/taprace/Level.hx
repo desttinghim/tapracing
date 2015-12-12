@@ -10,6 +10,14 @@ import luxe.Rectangle;
 
 import phoenix.Batcher;
 
+import nape.phys.Body;
+import nape.phys.BodyType;
+import nape.geom.Vec2;
+import nape.phys.Material;
+import nape.shape.Polygon;
+
+import luxe.components.physics.nape.*;
+
 class Level extends State
 {
 	//Sprites
@@ -51,6 +59,8 @@ class Level extends State
 		camera_right.pos.x = Main.midx/2;
 
 
+
+		//Creating Sprites
 		leftcharactersprite = new Sprite({
 			name: "left",
 			pos: new Vector(Luxe.screen.w/4, Luxe.screen.mid.y),
@@ -68,6 +78,33 @@ class Level extends State
 			batcher: batcher_left
 			});
 		batcher_right.add(	rightcharactersprite.geometry );
+
+
+		//Creating nape physics bodies
+		var leftcharactercol = new BoxCollider({
+			name: "nape",
+			body_type: BodyType.DYNAMIC,
+			material: Material.wood(),
+			x: leftcharactersprite.pos.x-leftcharactersprite.size.x,
+			y: leftcharactersprite.pos.y-leftcharactersprite.size.y,
+			w: leftcharactersprite.size.x,
+			h: leftcharactersprite.size.y
+			});
+
+		var rightcharactercol = new BoxCollider({
+			name: "nape",
+			body_type: BodyType.DYNAMIC,
+			material: Material.wood(),
+			x: rightcharactersprite.pos.x-rightcharactersprite.size.x,
+			y: rightcharactersprite.pos.y-rightcharactersprite.size.y,
+			w: rightcharactersprite.size.x,
+			h: rightcharactersprite.size.y
+			});
+
+		leftcharactersprite.add( leftcharactercol );
+		rightcharactersprite.add( rightcharactercol );
+
+		Luxe.physics.nape.space.gravity = new Vec2(0,0);
 	} //onenter
 
 	override function onleave<T>(_:T)
@@ -90,19 +127,26 @@ class Level extends State
 
 	override function ontouchup( event:TouchEvent )
 	{
-		if(leftcharactersprite.point_inside(event.pos))
+		if(event.pos.x < Main.midx)
 		{
-			leftcharacter();
-		}
-		if(rightcharactersprite.point_inside(event.pos))
+			if(leftcharactersprite.point_inside(event.pos))
+			{
+				leftcharacter();
+			}
+		}	
+		else
 		{
-			rightcharacter();
+			if(rightcharactersprite.point_inside(event.pos))
+			{
+				rightcharacter();
+			}
 		}
 	} //ontouchup
 
 	public function leftcharacter()
 	{
 		trace("left character");
+		character(leftcharactersprite);
 	} //leftcharacter
 
 	public function leftitem()
@@ -113,10 +157,17 @@ class Level extends State
 	public function rightcharacter()
 	{
 		trace("right character");
+		character(rightcharactersprite);
 	} //rightcharacter
 
 	public function rightitem()
 	{
 		trace("right item");
 	} //rightitem
+
+	public function character( char:Sprite )
+	{
+		var body = char.get("nape").body;
+		body.applyImpulse(new Vec2( 0, 100 ), body.position);
+	} //character
 }

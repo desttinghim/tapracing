@@ -8,8 +8,10 @@
 -D luxe_web
 -D snow_web
 -D luxe
+-D nape
 -D snow
 -cp c:/Users/louis/luxe/git/
+-cp c:/Users/louis/nape/2,0,19/
 -cp c:/Users/louis/snow/git/
 -cp src/
 -resource version@version

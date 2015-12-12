@@ -11,10 +11,10 @@
     - [x] Character entities
     - [x] Separate main and racing specific code
     - [ ] Split Screen Camera
-        + [ ] Actual camera code      
-        + [ ] Input changes
-    - [ ] Physics
-        + [ ] Nape, apply impulse when character tapped
+        + [x] Actual camera code      
+        + [?] Input changes (I'm going to need to do actual android testing)
+    - [x] Physics
+        + [x] Nape, apply impulse when character tapped
     - [ ] Gameplay
         + [ ] Goal, ends level
         + [ ] Items
