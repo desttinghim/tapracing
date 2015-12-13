@@ -15,21 +15,32 @@ import nape.phys.BodyType;
 import nape.geom.Vec2;
 import nape.phys.Material;
 import nape.shape.Polygon;
+import nape.callbacks.CbEvent;
+import nape.callbacks.CbType;
+import nape.callbacks.InteractionListener;
+import nape.callbacks.InteractionCallback;
+import nape.callbacks.InteractionType;
 
 import luxe.components.physics.nape.*;
+
+enum WIN 
+{
+	left;
+	right;
+}
 
 class Level extends State
 {
 	//Sprites
 	var leftcharactersprite		: Sprite;
 	var rightcharactersprite	: Sprite;
+	var goalsprite	: Sprite;
 
 	//Camera
 	var batcher_left	: Batcher;
 	var batcher_right	: Batcher;
 	var camera_left		: Camera;
 	var camera_right	: Camera;
-	var level_sprite	: Sprite;
 
 	override function onenter<T>(_:T)
 	{
@@ -79,6 +90,23 @@ class Level extends State
 			});
 		batcher_right.add(	rightcharactersprite.geometry );
 
+		goalsprite = new Sprite({
+			name: "goal",
+			color: new Color().rgb(0xf0f0f0),
+			size: new Vector(Main.midx, 64),
+			pos: new Vector(0, Main.midy*2),
+			batcher: batcher_left
+			});
+		batcher_right.add(	goalsprite.geometry );
+
+		// var goalcol = new NapeBody({
+		// 	name: "nape",
+		// 	body_type: BodyType.STATIC,
+		// 	});
+		// var shape = new Polygon(Polygon.rect(0,Main.midy*2,Main.midx, 64));
+		// shape.sensorEnabled = true;
+		// shape.body = goalcol.body;
+
 
 		//Creating nape physics bodies
 		var leftcharactercol = new BoxCollider({
@@ -101,21 +129,41 @@ class Level extends State
 			h: rightcharactersprite.size.y
 			});
 
+
 		leftcharactersprite.add( leftcharactercol );
 		rightcharactersprite.add( rightcharactercol );
+		// goalsprite.add( goalcol );
 
 		Luxe.physics.nape.space.gravity = new Vec2(0,0);
+
+		var goalCollisionType:CbType = new CbType();
+		var characterCollisionType:CbType = new CbType();
+
+		goalcol.body.cbTypes.add(goalCollisionType);
+		leftcharactercol.body.cbTypes.add(characterCollisionType);
+		rightcharactercol.body.cbTypes.add(characterCollisionType);
+
+		//collision listener
+		Luxe.physics.nape.space.listeners.add(new InteractionListener(
+			CbEvent.BEGIN, InteractionType.SENSOR, 
+			goalCollisionType, characterCollisionType,
+			goalToChar
+			));
+
+		Luxe.events.listen("win", function( e:WIN ){
+			trace(e);
+			});
 	} //onenter
 
-	override function onleave<T>(_:T)
-	{
+	// override function onleave<T>(_:T)
+	// {
 
-	} //onleave
+	// } //onleave
 
-	override function update( dt:Float )
-	{
+	// override function update( dt:Float )
+	// {
 
-	} //update
+	// } //update
 
 	override function onkeyup( event:KeyEvent )
 	{
@@ -170,4 +218,19 @@ class Level extends State
 		var body = char.get("nape").body;
 		body.applyImpulse(new Vec2( 0, 100 ), body.position);
 	} //character
+
+	public function goalToChar( cb:InteractionCallback )
+	{
+		var id = cb.int2.id;
+		var charleftid = leftcharactersprite.get("nape").id;
+		var charrightid = rightcharactersprite.get("nape").id;
+		if(charleftid == id)
+		{
+			Luxe.events.fire("win", WIN.left);
+		}
+		if(charrightid == id)
+		{
+			Luxe.events.fire("win", WIN.right);
+		}
+	}
 }
