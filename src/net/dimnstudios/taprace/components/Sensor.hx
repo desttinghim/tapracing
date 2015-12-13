@@ -33,6 +33,7 @@ class Sensor extends NapeBody
 
         super.onadded();
         body.cbTypes.add(options.cbtype);
+        body.space = Luxe.physics.nape.space;
         shape = options.shape;
 
         shape.sensorEnabled = true;

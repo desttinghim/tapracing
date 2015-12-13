@@ -62,6 +62,20 @@ class Level extends State
 		camera_right.pos.x = Main.midx/2;
 
 
+
+		Luxe.physics.nape.space.gravity = new Vec2(0,0);
+
+		var goalCollisionType:CbType = new CbType();
+		var characterCollisionType:CbType = new CbType();
+
+		//collision listener
+		Luxe.physics.nape.space.listeners.add(new InteractionListener(
+			CbEvent.BEGIN, InteractionType.SENSOR, 
+			goalCollisionType, characterCollisionType,
+			goalToChar
+			));
+
+
 		//Creating Sprites
 		leftcharactersprite = new Sprite({
 			name: "left",
@@ -90,10 +104,7 @@ class Level extends State
 		batcher_right.add(	goalsprite.geometry );
 
 
-		//Creating nape physics bodies
-		var goalCollisionType:CbType = new CbType();
-		var characterCollisionType:CbType = new CbType();
-
+		//Creating nape physics bodies components
 		var leftcharactercol = new BoxCollider({
 			name: "nape",
 			body_type: BodyType.DYNAMIC,
@@ -103,6 +114,8 @@ class Level extends State
 			w: leftcharactersprite.size.x,
 			h: leftcharactersprite.size.y
 			});
+		leftcharactersprite.add( leftcharactercol );
+
 		var rightcharactercol = new BoxCollider({
 			name: "nape",
 			body_type: BodyType.DYNAMIC,
@@ -112,43 +125,30 @@ class Level extends State
 			w: rightcharactersprite.size.x,
 			h: rightcharactersprite.size.y
 			});
+		rightcharactersprite.add( rightcharactercol );
+
 		var goalcol = new Sensor({
 			cbtype: goalCollisionType,
 			shape: new Polygon(Polygon.box(Main.midx, 64))
 			});
 		goalsprite.add(goalcol);
-		goalcol.body.position.setxy(0,Main.midy*2);
+		goalcol.body.position.setxy(Main.midx,Main.midy*2);
 
+		trace(leftcharactercol.body.cbTypes.add( characterCollisionType ));
+		trace(rightcharactercol.body.cbTypes.add( characterCollisionType ));
 
-		// var goalcol = new Body();
-		// goalcol.space = Luxe.physics.nape.space;
-		// goalcol.position.setxy(0, Main.midy*2);
-
-		// var goalshape:Shape = new Polygon(Polygon.box(Main.midx, 64));
-		// goalshape.sensorEnabled = true;
-		// goalshape.body = goalcol;
-
-		leftcharactersprite.add( leftcharactercol );
-		rightcharactersprite.add( rightcharactercol );
-
-		Luxe.physics.nape.space.gravity = new Vec2(0,0);
-
-		// goalcol.cbTypes.add(goalCollisionType);
-		leftcharactercol.body.cbTypes.add(characterCollisionType);
-		rightcharactercol.body.cbTypes.add(characterCollisionType);
-
-		//collision listener
-		Luxe.physics.nape.space.listeners.add(new InteractionListener(
-			CbEvent.BEGIN, InteractionType.SENSOR, 
-			goalCollisionType, characterCollisionType,
-			goalToChar
-			));
 
 		//win listener (Is this even necessary?)
 		Luxe.events.listen("win", function( e:WIN ){
 			trace(e);
 			});
 	} //onenter
+
+	override function update( dt:Float )
+	{
+		camera_right.center = rightcharactersprite.pos;
+		camera_left.center = leftcharactersprite.pos;
+	}
 
 	// override function onleave<T>(_:T)
 	// {
