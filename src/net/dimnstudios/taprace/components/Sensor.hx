@@ -40,13 +40,4 @@ class Sensor extends NapeBody
         shape.body = body;
 
     } //onadded
-
-	// This is the code that needs to be replicated
-	// var goalcol = new Body();
-	// goalcol.space = Luxe.physics.nape.space;
-	// goalcol.position.setxy(0, Main.midy*2);
-
-	// var goalshape:Shape = new Polygon(Polygon.box(Main.midx, 64));
-	// goalshape.sensorEnabled = true;
-	// goalshape.body = goalcol;
 }

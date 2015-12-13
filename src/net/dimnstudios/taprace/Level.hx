@@ -34,109 +34,78 @@ enum WIN
 
 class Level extends State
 {
-	//Sprites
-	var leftcharactersprite		: Sprite;
-	var rightcharactersprite	: Sprite;
-	var goalsprite	: Sprite;
+	// Sprites
+	var sprites : Array<Sprite>;
 
-	//Camera
-	var batcher_left	: Batcher;
-	var batcher_right	: Batcher;
-	var camera_left		: Camera;
-	var camera_right	: Camera;
+	// Camera
+	var cameras : Array<Camera>;
+	var batchers : Array<Batcher>;
+
+	var goalType:CbType = new CbType();
+	var charType:CbType = new CbType();
 
 	override function onenter<T>(_:T)
 	{
-		//create unique cameras
-		camera_left = new Camera({ name: "camera_left" });
-		camera_right = new Camera({ name: "camera_right" });
+		cameras = new Array();
+		batchers = new Array();
 
-		//create unique batchers
-		batcher_left = Luxe.renderer.create_batcher({ name: "batcher_left", camera: camera_left.view });
-		batcher_right = Luxe.renderer.create_batcher({ name: "batcher_right", camera: camera_right.view });
+		for(i in 0...2) 
+		{
+			cameras.push(new Camera({ name: "camera" }));
+			batchers.push(Luxe.renderer.create_batcher({ name: "batcher", camera: cameras[i].view }));
+		}
 
-		//create unique viewports
-		camera_left.viewport = new Rectangle(			0, 		0, 		Main.midx,	Luxe.screen.h);
-		camera_right.viewport = new Rectangle(	Main.midx, 		0, 		Main.midx,	Luxe.screen.h);
-
-		camera_right.pos.x = Main.midx/2;
-
-
+		cameras[0].viewport = new Rectangle(			0, 			0, 		Main.midx,	Luxe.screen.h);
+		cameras[1].viewport = new Rectangle(	Main.midx, 			0, 		Main.midx,	Luxe.screen.h);
 
 		Luxe.physics.nape.space.gravity = new Vec2(0,0);
 
-		var goalCollisionType:CbType = new CbType();
-		var characterCollisionType:CbType = new CbType();
+		var goalType:CbType = new CbType();
+		var charType:CbType = new CbType();
 
 		//collision listener
 		Luxe.physics.nape.space.listeners.add(new InteractionListener(
 			CbEvent.BEGIN, InteractionType.SENSOR, 
-			goalCollisionType, characterCollisionType,
+			goalType, charType,
 			goalToChar
 			));
 
+		//Sprites
+		sprites = new Array();
+		for(i in 0...2) 
+		{
+			sprites.push(new Sprite({
+				name: "character",
+				color: new Color().rgb(0xf94b04 + i * 300),
+				size: new Vector(64, 64)
+				}));
+			sprites[i].add(new BoxCollider({
+				name: "nape",
+				body_type: BodyType.DYNAMIC,
+				material: Material.wood(),
+				x: sprites[i].pos.x,
+				y: sprites[i].pos.y,
+				w: sprites[i].size.x,
+				h: sprites[i].size.y
+				}));
+			for(a in 0...2)
+			{
+				batchers[a].add(sprites[i].geometry);
+			}
+		}
 
-		//Creating Sprites
-		leftcharactersprite = new Sprite({
-			name: "left",
-			pos: new Vector(Luxe.screen.w/4, Luxe.screen.mid.y),
-			color: new Color().rgb(0xf94b04),
-			size: new Vector(64, 64),
-			batcher: batcher_left
-			});
-		batcher_right.add(	leftcharactersprite.geometry );
-
-		rightcharactersprite = new Sprite({
-			name: "right",
-			pos: new Vector(Main.midx, Luxe.screen.mid.y),
-			color: new Color().rgb(0x4bf904),
-			size: new Vector(64, 64),
-			batcher: batcher_left
-			});
-		batcher_right.add(	rightcharactersprite.geometry );
-
-		goalsprite = new Sprite({
+		sprites[2] = new Sprite({
 			name: "goal",
 			color: new Color().rgb(0xf0f0f0),
-			size: new Vector(Main.midx*2, 64),
-			batcher: batcher_left
+			size: new Vector(Main.midx, 64)
 			});
-		batcher_right.add(	goalsprite.geometry );
-
-
-		//Creating nape physics bodies components
-		var leftcharactercol = new BoxCollider({
-			name: "nape",
-			body_type: BodyType.DYNAMIC,
-			material: Material.wood(),
-			x: leftcharactersprite.pos.x-leftcharactersprite.size.x,
-			y: leftcharactersprite.pos.y-leftcharactersprite.size.y,
-			w: leftcharactersprite.size.x,
-			h: leftcharactersprite.size.y
-			});
-		leftcharactersprite.add( leftcharactercol );
-
-		var rightcharactercol = new BoxCollider({
-			name: "nape",
-			body_type: BodyType.DYNAMIC,
-			material: Material.wood(),
-			x: rightcharactersprite.pos.x-rightcharactersprite.size.x,
-			y: rightcharactersprite.pos.y-rightcharactersprite.size.y,
-			w: rightcharactersprite.size.x,
-			h: rightcharactersprite.size.y
-			});
-		rightcharactersprite.add( rightcharactercol );
-
-		var goalcol = new Sensor({
-			cbtype: goalCollisionType,
+		batchers[0].add(sprites[2].geometry);
+		batchers[1].add(sprites[2].geometry);
+		sprites[2].add(new Sensor({
+			name: "sensor",
+			cbtype: goalType,
 			shape: new Polygon(Polygon.box(Main.midx, 64))
-			});
-		goalsprite.add(goalcol);
-		goalcol.body.position.setxy(Main.midx,Main.midy*2);
-
-		trace(leftcharactercol.body.cbTypes.add( characterCollisionType ));
-		trace(rightcharactercol.body.cbTypes.add( characterCollisionType ));
-
+			}));
 
 		//win listener (Is this even necessary?)
 		Luxe.events.listen("win", function( e:WIN ){
@@ -144,10 +113,25 @@ class Level extends State
 			});
 	} //onenter
 
+	var once : Bool = true;
+	var twice : Bool = true;
+
 	override function update( dt:Float )
 	{
-		camera_right.center = rightcharactersprite.pos;
-		camera_left.center = leftcharactersprite.pos;
+		// if(once || twice)
+		// {
+		// 	once = false;
+		// 	if(once)
+		// 		return;
+		// 	twice = false;
+		// 	for(i in 0...2)
+		// 	{
+		// 		var collider = sprites[i].get("nape");
+		// 		collider.body.cbTypes.add(charType);
+		// 	}
+		// }
+		cameras[0].center = sprites[0].pos;
+		cameras[1].center = sprites[1].pos;
 	}
 
 	// override function onleave<T>(_:T)
@@ -172,14 +156,14 @@ class Level extends State
 	{
 		if(event.pos.x < Main.midx)
 		{
-			if(leftcharactersprite.point_inside(event.pos))
+			if(sprites[0].point_inside(event.pos))
 			{
 				leftcharacter();
 			}
 		}	
 		else
 		{
-			if(rightcharactersprite.point_inside(event.pos))
+			if(sprites[1].point_inside(event.pos))
 			{
 				rightcharacter();
 			}
@@ -189,7 +173,7 @@ class Level extends State
 	public function leftcharacter()
 	{
 		trace("left character");
-		character(leftcharactersprite);
+		character(sprites[0]);
 	} //leftcharacter
 
 	public function leftitem()
@@ -200,7 +184,7 @@ class Level extends State
 	public function rightcharacter()
 	{
 		trace("right character");
-		character(rightcharactersprite);
+		character(sprites[1]);
 	} //rightcharacter
 
 	public function rightitem()
@@ -218,8 +202,8 @@ class Level extends State
 	{
 		trace("Someone wins!");
 		var id = cb.int2.id;
-		var charleftid = leftcharactersprite.get("nape").id;
-		var charrightid = rightcharactersprite.get("nape").id;
+		var charleftid = sprites[0].get("nape").id;
+		var charrightid = sprites[1].get("nape").id;
 		if(charleftid == id)
 		{
 			Luxe.events.fire("win", WIN.left);
