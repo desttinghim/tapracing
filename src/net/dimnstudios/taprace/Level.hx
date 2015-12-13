@@ -15,6 +15,7 @@ import nape.phys.BodyType;
 import nape.geom.Vec2;
 import nape.phys.Material;
 import nape.shape.Polygon;
+import nape.shape.Shape;
 import nape.callbacks.CbEvent;
 import nape.callbacks.CbType;
 import nape.callbacks.InteractionListener;
@@ -22,6 +23,8 @@ import nape.callbacks.InteractionCallback;
 import nape.callbacks.InteractionType;
 
 import luxe.components.physics.nape.*;
+
+import net.dimnstudios.taprace.components.Sensor;
 
 enum WIN 
 {
@@ -56,19 +59,7 @@ class Level extends State
 		camera_left.viewport = new Rectangle(			0, 		0, 		Main.midx,	Luxe.screen.h);
 		camera_right.viewport = new Rectangle(	Main.midx, 		0, 		Main.midx,	Luxe.screen.h);
 
-		// level_sprite = new Sprite({
-		// 	name: "level_sprite",
-		// 	color: new Color().rgb(0x0f0f0f),
-		// 	pos: new Vector(0,0),
-		// 	size: Luxe.screen.size,
-		// 	centered: false,
-		// 	batcher: batcher_left
-		// 	}); //level_sprite
-
-		// batcher_right.add(	level_sprite.geometry );
-
 		camera_right.pos.x = Main.midx/2;
-
 
 
 		//Creating Sprites
@@ -93,22 +84,16 @@ class Level extends State
 		goalsprite = new Sprite({
 			name: "goal",
 			color: new Color().rgb(0xf0f0f0),
-			size: new Vector(Main.midx, 64),
-			pos: new Vector(0, Main.midy*2),
+			size: new Vector(Main.midx*2, 64),
 			batcher: batcher_left
 			});
 		batcher_right.add(	goalsprite.geometry );
 
-		// var goalcol = new NapeBody({
-		// 	name: "nape",
-		// 	body_type: BodyType.STATIC,
-		// 	});
-		// var shape = new Polygon(Polygon.rect(0,Main.midy*2,Main.midx, 64));
-		// shape.sensorEnabled = true;
-		// shape.body = goalcol.body;
-
 
 		//Creating nape physics bodies
+		var goalCollisionType:CbType = new CbType();
+		var characterCollisionType:CbType = new CbType();
+
 		var leftcharactercol = new BoxCollider({
 			name: "nape",
 			body_type: BodyType.DYNAMIC,
@@ -118,7 +103,6 @@ class Level extends State
 			w: leftcharactersprite.size.x,
 			h: leftcharactersprite.size.y
 			});
-
 		var rightcharactercol = new BoxCollider({
 			name: "nape",
 			body_type: BodyType.DYNAMIC,
@@ -128,18 +112,28 @@ class Level extends State
 			w: rightcharactersprite.size.x,
 			h: rightcharactersprite.size.y
 			});
+		var goalcol = new Sensor({
+			cbtype: goalCollisionType,
+			shape: new Polygon(Polygon.box(Main.midx, 64))
+			});
+		goalsprite.add(goalcol);
+		goalcol.body.position.setxy(0,Main.midy*2);
 
+
+		// var goalcol = new Body();
+		// goalcol.space = Luxe.physics.nape.space;
+		// goalcol.position.setxy(0, Main.midy*2);
+
+		// var goalshape:Shape = new Polygon(Polygon.box(Main.midx, 64));
+		// goalshape.sensorEnabled = true;
+		// goalshape.body = goalcol;
 
 		leftcharactersprite.add( leftcharactercol );
 		rightcharactersprite.add( rightcharactercol );
-		// goalsprite.add( goalcol );
 
 		Luxe.physics.nape.space.gravity = new Vec2(0,0);
 
-		var goalCollisionType:CbType = new CbType();
-		var characterCollisionType:CbType = new CbType();
-
-		goalcol.body.cbTypes.add(goalCollisionType);
+		// goalcol.cbTypes.add(goalCollisionType);
 		leftcharactercol.body.cbTypes.add(characterCollisionType);
 		rightcharactercol.body.cbTypes.add(characterCollisionType);
 
@@ -150,6 +144,7 @@ class Level extends State
 			goalToChar
 			));
 
+		//win listener (Is this even necessary?)
 		Luxe.events.listen("win", function( e:WIN ){
 			trace(e);
 			});
@@ -221,6 +216,7 @@ class Level extends State
 
 	public function goalToChar( cb:InteractionCallback )
 	{
+		trace("Someone wins!");
 		var id = cb.int2.id;
 		var charleftid = leftcharactersprite.get("nape").id;
 		var charrightid = rightcharactersprite.get("nape").id;

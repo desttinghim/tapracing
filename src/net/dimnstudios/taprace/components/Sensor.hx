@@ -2,15 +2,50 @@ package net.dimnstudios.taprace.components;
 
 import luxe.Component;
 import luxe.options.ComponentOptions;
-import luxe.phys.nape.components.NapeBody;
+import luxe.components.physics.nape.NapeBody;
+import nape.shape.Shape;
+
 import nape.callbacks.CbType;
+
+typedef SensorOptions = {
+
+    > NapeBodyOptions,
+    
+    @:optional var cbtype : CbType;
+
+    @:optional var shape : Shape;
+
+} //BoxColliderOptions
 
 class Sensor extends NapeBody
 {
-	public static const SENSOR:CbType = new CbType();
+	var options : SensorOptions;
+	var shape : Shape;
 
-	public function new(_name:String, params:Object)
+	public function new( _options:SensorOptions )
 	{
-		super({ name:_name });
+		options = _options;
+		super(options);
 	}
+
+	override function onadded() : Void 
+	{
+
+        super.onadded();
+        body.cbTypes.add(options.cbtype);
+        shape = options.shape;
+
+        shape.sensorEnabled = true;
+        shape.body = body;
+
+    } //onadded
+
+	// This is the code that needs to be replicated
+	// var goalcol = new Body();
+	// goalcol.space = Luxe.physics.nape.space;
+	// goalcol.position.setxy(0, Main.midy*2);
+
+	// var goalshape:Shape = new Polygon(Polygon.box(Main.midx, 64));
+	// goalshape.sensorEnabled = true;
+	// goalshape.body = goalcol;
 }
