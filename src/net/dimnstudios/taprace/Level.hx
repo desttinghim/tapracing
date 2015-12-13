@@ -7,6 +7,7 @@ import luxe.Color;
 import luxe.Input;
 import luxe.Camera;
 import luxe.Rectangle;
+import luxe.Component;
 
 import phoenix.Batcher;
 
@@ -41,6 +42,8 @@ class Level extends State
 	var cameras : Array<Camera>;
 	var batchers : Array<Batcher>;
 
+	var components : Array<Component>;
+
 	var goalType:CbType = new CbType();
 	var charType:CbType = new CbType();
 
@@ -51,8 +54,8 @@ class Level extends State
 
 		for(i in 0...2) 
 		{
-			cameras.push(new Camera({ name: "camera" }));
-			batchers.push(Luxe.renderer.create_batcher({ name: "batcher", camera: cameras[i].view }));
+			cameras.push(new Camera({ name: "camera_" + i }));
+			batchers.push(Luxe.renderer.create_batcher({ name: "batcher_" + i, camera: cameras[i].view }));
 		}
 
 		cameras[0].viewport = new Rectangle(			0, 			0, 		Main.midx,	Luxe.screen.h);
@@ -72,14 +75,16 @@ class Level extends State
 
 		//Sprites
 		sprites = new Array();
+		components = new Array();
 		for(i in 0...2) 
 		{
 			sprites.push(new Sprite({
 				name: "character",
+				name_unique: true,
 				color: new Color().rgb(0xf94b04 + i * 300),
 				size: new Vector(64, 64)
 				}));
-			sprites[i].add(new BoxCollider({
+			components.push(new BoxCollider({
 				name: "nape",
 				body_type: BodyType.DYNAMIC,
 				material: Material.wood(),
@@ -88,6 +93,7 @@ class Level extends State
 				w: sprites[i].size.x,
 				h: sprites[i].size.y
 				}));
+			sprites[i].add(components[i]);
 			for(a in 0...2)
 			{
 				batchers[a].add(sprites[i].geometry);
@@ -101,11 +107,12 @@ class Level extends State
 			});
 		batchers[0].add(sprites[2].geometry);
 		batchers[1].add(sprites[2].geometry);
-		sprites[2].add(new Sensor({
+		components.push(new Sensor({
 			name: "sensor",
 			cbtype: goalType,
 			shape: new Polygon(Polygon.box(Main.midx, 64))
 			}));
+		sprites[2].add(components[2]);
 
 		//win listener (Is this even necessary?)
 		Luxe.events.listen("win", function( e:WIN ){
@@ -114,22 +121,31 @@ class Level extends State
 	} //onenter
 
 	var once : Bool = true;
-	var twice : Bool = true;
 
 	override function update( dt:Float )
 	{
-		// if(once || twice)
-		// {
-		// 	once = false;
-		// 	if(once)
-		// 		return;
-		// 	twice = false;
-		// 	for(i in 0...2)
-		// 	{
-		// 		var collider = sprites[i].get("nape");
-		// 		collider.body.cbTypes.add(charType);
-		// 	}
-		// }
+		if(once)
+		{
+			once = false;
+			for(i in 0...2)
+			{
+				if(components[i].name == "nape")
+				{ 
+					var collider : BoxCollider = cast components[i];
+					collider.body.cbTypes.add(charType);
+				}
+				if(components[i].name == "sensor")
+				{
+					var sensor = cast components[2];
+					sensor.position.set_xy(Main.midx, Main.midy*2);
+				}
+				if(sprites[2].name == "goal")
+				{
+					var goal = sprites[2];
+					goal.pos.set_xy(Main.midx, Main.midy*2);
+				}
+			}
+		}
 		cameras[0].center = sprites[0].pos;
 		cameras[1].center = sprites[1].pos;
 	}
@@ -146,9 +162,9 @@ class Level extends State
 
 	override function onkeyup( event:KeyEvent )
 	{
-		if(event.keycode == Main.leftcharacterkey) leftcharacter();
+		if(event.keycode == Main.leftcharacterkey) characteraction(sprites[0]);
 		if(event.keycode == Main.leftitemkey) leftitem();
-		if(event.keycode == Main.rightcharacterkey) rightcharacter();
+		if(event.keycode == Main.rightcharacterkey) characteraction(sprites[1]);
 		if(event.keycode == Main.rightitemkey) rightitem();
 	} //onkeyup
 
@@ -158,45 +174,33 @@ class Level extends State
 		{
 			if(sprites[0].point_inside(event.pos))
 			{
-				leftcharacter();
+				characteraction(sprites[0]);
 			}
 		}	
 		else
 		{
 			if(sprites[1].point_inside(event.pos))
 			{
-				rightcharacter();
+				characteraction(sprites[1]);
 			}
 		}
 	} //ontouchup
-
-	public function leftcharacter()
-	{
-		trace("left character");
-		character(sprites[0]);
-	} //leftcharacter
 
 	public function leftitem()
 	{
 		trace("left item");
 	} //leftitem
 
-	public function rightcharacter()
-	{
-		trace("right character");
-		character(sprites[1]);
-	} //rightcharacter
-
 	public function rightitem()
 	{
 		trace("right item");
 	} //rightitem
 
-	public function character( char:Sprite )
+	public function characteraction( char:Sprite )
 	{
 		var body = char.get("nape").body;
 		body.applyImpulse(new Vec2( 0, 100 ), body.position);
-	} //character
+	} //characteraction
 
 	public function goalToChar( cb:InteractionCallback )
 	{
