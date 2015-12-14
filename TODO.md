@@ -20,7 +20,7 @@
             ~~* [x] Signal win (Only the right side can win?)
             * [x] Make goal not collide 
             * [x] Make goal sprite (got a sensor component made)~~
-            * [ ] Forget nape sensor, just use sprite 
+            * [x] Forget nape sensor, just use sprite 
         + [ ] Items
             * [ ] Speed Boost: Each tap applies a greater impulse
             * [ ] Auto Tap: Impulse is applied every x milliseconds automatically
