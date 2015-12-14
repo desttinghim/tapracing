@@ -37,6 +37,7 @@ class Level extends State
 {
 	// Sprites
 	var sprites : Array<Sprite>;
+	var characters : Array<Sprite>;
 
 	// Camera
 	var cameras : Array<Camera>;
@@ -99,6 +100,7 @@ class Level extends State
 				batchers[a].add(sprites[i].geometry);
 			}
 		}
+		characters = sprites.copy();
 
 		sprites[2] = new Sprite({
 			name: "goal",
@@ -107,12 +109,12 @@ class Level extends State
 			});
 		batchers[0].add(sprites[2].geometry);
 		batchers[1].add(sprites[2].geometry);
-		components.push(new Sensor({
-			name: "sensor",
-			cbtype: goalType,
-			shape: new Polygon(Polygon.box(Main.midx, 64))
-			}));
-		sprites[2].add(components[2]);
+// 		components.push(new Sensor({
+// 			name: "sensor",
+// 			cbtype: goalType,
+// 			shape: new Polygon(Polygon.box(Main.midx, 64))
+// 			}));
+// 		sprites[2].add(components[2]);
 
 		//win listener (Is this even necessary?)
 		Luxe.events.listen("win", function( e:WIN ){
@@ -124,28 +126,35 @@ class Level extends State
 
 	override function update( dt:Float )
 	{
-		if(once)
-		{
-			once = false;
-			for(i in 0...2)
-			{
-				if(components[i].name == "nape")
-				{ 
-					var collider : BoxCollider = cast components[i];
-					collider.body.cbTypes.add(charType);
-				}
-				if(components[i].name == "sensor")
-				{
-					var sensor = cast components[2];
-					sensor.position.set_xy(Main.midx, Main.midy*2);
-				}
-				if(sprites[2].name == "goal")
-				{
-					var goal = sprites[2];
-					goal.pos.set_xy(Main.midx, Main.midy*2);
-				}
-			}
-		}
+// 		if(once)
+// 		{
+// 			once = false;
+// 			for(i in 0...2)
+// 			{
+// 				if(components[i].name == "nape")
+// 				{ 
+// 					var collider : BoxCollider = cast components[i];
+// 					collider.body.cbTypes.add(charType);
+// 				}
+// 				if(components[i].name == "sensor")
+// 				{
+// 					var sensor = cast components[2];
+// 					sensor.position.set_xy(Main.midx, Main.midy*2);
+// 				}
+// 				if(sprites[2].name == "goal")
+// 				{
+// 					var goal = sprites[2];
+// 					goal.pos.set_xy(Main.midx, Main.midy*2);
+// 				}
+// 			}
+// 		}
+        for(character in characters)
+        {
+            if(sprites[2].point_inside_AABB(character.pos))
+            {
+                trace(character.name + " wins!");
+            }
+        }
 		cameras[0].center = sprites[0].pos;
 		cameras[1].center = sprites[1].pos;
 	}
