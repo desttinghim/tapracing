@@ -43,6 +43,8 @@ class Level extends State
 			batchers.push(Luxe.renderer.create_batcher({ name: "batcher_" + i, camera: cameras[i].view }));
 		}
 
+		Luxe.camera.active = false;
+
 		cameras[0].viewport = new Rectangle(			0, 			0, 		Main.midx,	Luxe.screen.h);
 		cameras[1].viewport = new Rectangle(	Main.midx, 			0, 		Main.midx,	Luxe.screen.h);
 
@@ -94,7 +96,7 @@ class Level extends State
 		{
 			if(sprites[2].point_inside_AABB(character.pos))
 			{
-				trace(character.name + " wins!");
+				win( character );
 			}
 		}
 		cameras[0].center = sprites[0].pos;
@@ -104,9 +106,7 @@ class Level extends State
 	override function onkeyup( event:KeyEvent )
 	{
 		if(event.keycode == Main.leftcharacterkey) characteraction(sprites[0]);
-		if(event.keycode == Main.leftitemkey) leftitem();
 		if(event.keycode == Main.rightcharacterkey) characteraction(sprites[1]);
-		if(event.keycode == Main.rightitemkey) rightitem();
 	} //onkeyup
 
 	override function ontouchup( event:TouchEvent )
@@ -127,19 +127,14 @@ class Level extends State
 		}
 	} //ontouchup
 
-	public function leftitem()
-	{
-		trace("left item");
-	} //leftitem
-
-	public function rightitem()
-	{
-		trace("right item");
-	} //rightitem
-
-	public function characteraction( char:Sprite )
+	function characteraction( char:Sprite )
 	{
 		var body = char.get("nape").body;
 		body.applyImpulse(new Vec2( 0, 100 ), body.position);
 	} //characteraction
+
+	function win( character:Sprite )
+	{
+		trace(character.name + " wins!");
+	}
 }

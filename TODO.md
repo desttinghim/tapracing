@@ -21,10 +21,13 @@
             * [x] Make goal not collide 
             * [x] Make goal sprite (got a sensor component made)~~
             * [x] Forget nape sensor, just use sprite 
-        + [ ] Items
+        + [ ] Interesting race tracks
+            * [ ] Waypoint defined tracks
+            * [ ] Walls to tracks
+        ~~+ [ ] Items
             * [ ] Speed Boost: Each tap applies a greater impulse
             * [ ] Auto Tap: Impulse is applied every x milliseconds automatically
-            * [ ] Distract: Blocks other players view of the screen
+            * [ ] Distract: Blocks other players view of the screen~~
 * [ ] Alpha
     - [ ] Levels
     - [ ] Menu
