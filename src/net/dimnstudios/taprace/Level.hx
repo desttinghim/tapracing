@@ -24,7 +24,6 @@ class Level extends State
 {
 	// Sprites
 	var sprites : Array<Sprite>;
-	var characters : Array<Sprite>;
 
 	// Camera
 	var cameras : Array<Camera>;
@@ -36,14 +35,15 @@ class Level extends State
 	{
 		cameras = new Array();
 		batchers = new Array();
-
+		
+		Luxe.renderer.clear_color.tween(0.2,{ r:0.06, g:0.075, b:0.098 });
+		
 		for(i in 0...2) 
 		{
 			cameras.push(new Camera({ name: "camera_" + i }));
 			batchers.push(Luxe.renderer.create_batcher({ name: "batcher_" + i, camera: cameras[i].view }));
 		}
 
-		Luxe.camera.active = false;
 
 		cameras[0].viewport = new Rectangle(			0, 			0, 		Main.midx,	Luxe.screen.h);
 		cameras[1].viewport = new Rectangle(	Main.midx, 			0, 		Main.midx,	Luxe.screen.h);
@@ -59,8 +59,11 @@ class Level extends State
 				name: "character",
 				name_unique: true,
 				color: new Color().rgb(0xf94b04 + i * 300),
-				size: new Vector(64, 64)
+				pos: new Vector(Main.midx/2 + (Main.midx*i), 0),
+				size: new Vector(64, 64),
+				batcher: batchers[0]
 				}));
+			batchers[1].add(sprites[i].geometry);
 			components.push(new BoxCollider({
 				name: "nape",
 				body_type: BodyType.DYNAMIC,
@@ -71,32 +74,54 @@ class Level extends State
 				h: sprites[i].size.y
 				}));
 			sprites[i].add(components[i]);
-			for(a in 0...2)
-			{
-				batchers[a].add(sprites[i].geometry);
-			}
 		}
-		characters = sprites.copy();
 
 		sprites[2] = new Sprite({
 			name: "goal",
 			color: new Color().rgb(0xf0f0f0),
-			size: new Vector(Main.midx, 64),
-			pos: new Vector(0,Main.midy*2)
+			size: new Vector(Main.midx*2, 64),
+			pos: new Vector(Main.midx,Main.midy*2),
+			batcher: batchers[0]
 			});
-		batchers[0].add(sprites[2].geometry);
 		batchers[1].add(sprites[2].geometry);
 	} //onenter
+
+	override function onleave<T>(_:T)
+	{
+		trace("Entering onleave!");
+		var i = 0;
+		for(sprite in sprites)
+		{
+			trace(i++);
+			sprite.destroy();
+		}
+		trace("Destroyed sprites!");
+		sprites = null;
+		
+		for(batcher in batchers)
+		{
+			batcher.destroy();
+		}
+		trace("Destroyed batchers!");
+		batchers = null;
+		
+		for(camera in cameras)
+		{
+			camera.destroy();
+		}
+		trace("Destroyed cameras!");
+		cameras = null;
+	}
 
 	var once : Bool = true;
 
 	override function update( dt:Float )
 	{
-		for(character in characters)
+		for(i in 0...2)
 		{
-			if(sprites[2].point_inside_AABB(character.pos))
+			if(sprites[2].point_inside_AABB(sprites[i].pos))
 			{
-				win( character );
+				win( sprites[i] );
 			}
 		}
 		cameras[0].center = sprites[0].pos;
@@ -136,5 +161,7 @@ class Level extends State
 	function win( character:Sprite )
 	{
 		trace(character.name + " wins!");
+		Main.state.unset("level");
+		Main.state.set("menu");
 	}
 }
