@@ -161,7 +161,7 @@ class Level extends State
 	function win( character:Sprite )
 	{
 		trace(character.name + " wins!");
-		Main.state.unset("level");
 		Main.state.set("menu");
+		Main.state.unset("level");
 	}
 }

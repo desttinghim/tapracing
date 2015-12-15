@@ -16,7 +16,7 @@
     - [x] Physics
         + [x] Nape, apply impulse when character tapped
     - [ ] Gameplay
-        + [ ] Goal, ends level
+        + [x] Goal, ends level (But level ending produces crash.)
             ~~* [x] Signal win (Only the right side can win?)
             * [x] Make goal not collide 
             * [x] Make goal sprite (got a sensor component made)~~

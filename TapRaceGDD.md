@@ -9,11 +9,22 @@ The goal could be the edge of the screen or a static point on a map. If the goal
 
 If the goal is a static point on the map, it is a test of who can tap most quickly during a set amount of time. 
 
+###Levels
+To add variety, there wil be different levels with different themes. An example could be a level set in space, where the characters that the players control are spaceships and the background is stars and planets. Levels will also have tracks that are followed - the characters that you play as are not always going in a straight line.
+
 ###Items
 Items are objects that can be tapped on to give the player an advantage, such as boosting, auto-tapping, or a covering the opponents side of the screen. Items will be passed by players, and if they are not fast enough they will miss the opportunity to use it.
 
-###Levels
-To add variety, there wil be different levels with different themes. An example could be a level set in space, where the characters that the players control are spaceships and the background is stars and planets. 
+##Feature List
+
+* Primary Features
+	* Local Multiplayer
+	* High Scores
+	* Levels
+* Secondary Features
+	* Random Items
+	* Themes
+
 
 ##States
 
