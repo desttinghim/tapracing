@@ -13,6 +13,7 @@ class Menu extends State
 	
 	override function onenter<T>(_:T)
 	{
+		trace("Menu.onenter");
 	 	Luxe.renderer.clear_color.tween(0.2,{ r:0.06, g:0.075, b:0.098 });
 	 	
 		text = new Text({
@@ -36,6 +37,7 @@ class Menu extends State
 	
 	override function onleave<T>(_:T)
 	{
+		trace("Menu.onleave");
 		text.destroy();
 		text = null;
 		
@@ -48,7 +50,7 @@ class Menu extends State
 		if(Luxe.input.keyreleased(Main.leftcharacterkey))
 		{
 			Main.state.unset("menu");
-			Main.state.set("level");
+			Main.state.set("singleplayer");
 		}
 	}
 }

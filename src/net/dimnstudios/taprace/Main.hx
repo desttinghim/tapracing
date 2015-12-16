@@ -18,6 +18,7 @@ class Main extends luxe.Game
 	public static var state : States;
 	
 	public static var win : Bool = false;
+	public static var lowscore : Float;
 	public static var font : phoenix.BitmapFont;
 	
 	override function config(config:luxe.AppConfig)
@@ -31,6 +32,7 @@ class Main extends luxe.Game
 
 	override function ready()
 	{
+		trace("ready");
 		font = Luxe.resources.font("assets/font/proclamate.fnt");
 		
 		leftcharacterkey 	= Key.key_z;
@@ -43,7 +45,8 @@ class Main extends luxe.Game
 
 		state = new States();
 		
-		state.add(new Level({name: "level" }));
+		state.add(new Multiplayer({name: "multiplayer" }));
+		state.add(new Singleplayer({name: "singleplayer" }));
 		state.add(new Menu({name: "menu" }));
 
 		state.set("menu");

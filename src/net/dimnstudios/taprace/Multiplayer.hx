@@ -1,7 +1,7 @@
 package net.dimnstudios.taprace;
 
-import luxe.States;
 import luxe.Sprite;
+import luxe.States;
 import luxe.Vector;
 import luxe.Color;
 import luxe.Input;
@@ -20,7 +20,7 @@ import nape.shape.Shape;
 
 import luxe.components.physics.nape.*;
 
-class Level extends State
+class Multiplayer extends State
 {
 	// Sprites
 	var sprites : Array<Sprite>;
@@ -162,6 +162,6 @@ class Level extends State
 	{
 		trace(character.name + " wins!");
 		Main.state.set("menu");
-		Main.state.unset("level");
+		Main.state.unset("multiplayer");
 	}
 }

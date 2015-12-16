@@ -2,42 +2,49 @@ package net.dimnstudios.taprace.components;
 
 import luxe.Component;
 import luxe.options.ComponentOptions;
-import luxe.components.physics.nape.NapeBody;
-import nape.shape.Shape;
-
-import nape.callbacks.CbType;
+import luxe.Sprite;
+import luxe.Entity;
 
 typedef SensorOptions = {
 
-    > NapeBodyOptions,
-    
-    @:optional var cbtype : CbType;
+	> ComponentOptions,
+	
+	var event : String;
+	
+	var triggers : Array<Sprite>;
+} //SensorOptions
 
-    @:optional var shape : Shape;
 
-} //BoxColliderOptions
-
-class Sensor extends NapeBody
+class Sensor extends Component
 {
+	var sprite : Sprite;
+	var event : String;
+	var triggers : Array<Sprite>;
 	var options : SensorOptions;
-	var shape : Shape;
-
-	public function new( _options:SensorOptions )
+	
+	function new( _options:SensorOptions )
 	{
 		options = _options;
+		event = options.event;
 		super(options);
 	}
-
-	override function onadded() : Void 
+	
+	override function onadded()
 	{
-
-        super.onadded();
-        body.cbTypes.add(options.cbtype);
-        body.space = Luxe.physics.nape.space;
-        shape = options.shape;
-
-        shape.sensorEnabled = true;
-        shape.body = body;
-
-    } //onadded
+		trace("Sensor added");
+		triggers = options.triggers;
+		sprite = cast entity;
+	}
+	
+	override function update( dt:Float )
+	{
+		for(entity in triggers)
+		{
+			if(sprite.point_inside(entity.pos))
+			{
+				trace(event);
+				Luxe.events.fire(event);
+			}
+		}
+	}
 }
