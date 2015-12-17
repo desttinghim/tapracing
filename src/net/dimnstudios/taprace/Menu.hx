@@ -11,7 +11,6 @@ class Menu extends State
 {
 	var text : Text;
 	var lowscore : Text;
-	var sprite : Sprite;
 	
 	override function onenter<T>(_:T)
 	{
@@ -53,12 +52,6 @@ class Menu extends State
                .ease( luxe.tween.easing.Bounce.easeOut );
         Actuate.tween(lowscore.pos, 2, { x:Main.midx })
                .ease( luxe.tween.easing.Bounce.easeOut );
-		
-		// Test sprite, because the text didn't work
-		sprite = new Sprite({
-			color: new Color().rgb(0xf0f0f0),
-			size: new Vector(64, 64)
-		});
 	}
 	
 	override function onleave<T>(_:T)
@@ -69,9 +62,6 @@ class Menu extends State
 		
 		lowscore.destroy();
 		lowscore = null;
-		
-		sprite.destroy();
-		sprite = null;
 	}
 	
 	override function update( dt:Float )

@@ -19,8 +19,8 @@ TODO
 	    + [x] Player sprite
 	    + [x] Goal sprite
 	        * [x] Sensor (non-nape) component
-        + [x] High scores (mostly)
-    - [ ] Paths
+        + [x] High scores (done!)
+    - [x] Paths
         + Using node objects/sprites 
     - ~~[ ] Gameplay
 		+ [x] Goal, ends level (But level ending produces crash.)

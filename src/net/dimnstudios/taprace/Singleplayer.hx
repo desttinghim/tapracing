@@ -1,6 +1,7 @@
 package net.dimnstudios.taprace;
 
 import luxe.States;
+import luxe.Text;
 import luxe.Sprite;
 import luxe.Vector;
 import luxe.Color;
@@ -29,13 +30,15 @@ class Singleplayer extends State
 	
 	var boxcollider : BoxCollider;
 	var sensor : Sensor;
+	var counter_text : Text;
 	
-	var time : Float;
+	var counter : Float;
 	var started : Bool;
 	
 	override function onenter<T>(_:T)
 	{
 		started = false;
+		counter = 0;
 		
 		Luxe.renderer.clear_color.tween(0.2,{ r:0.06, g:0.075, b:0.098 });
 		Luxe.physics.nape.space.gravity = new Vec2(0,0);
@@ -120,6 +123,9 @@ class Singleplayer extends State
         
         node_goto = node1; //Start path with node1
         //end node creation
+        
+        
+         counter_text = new Text({text: '$counter', pos: new Vector(0,0)});
 	} //onenter
 
 	override function onleave<T>(_:T)
@@ -130,6 +136,20 @@ class Singleplayer extends State
 		character.destroy();
 		character = null;
 		boxcollider = null;
+		
+		node1.destroy();
+		node2.destroy();
+		node1 = null;
+		node2 = null;
+		
+		counter_text.destroy();
+		counter_text = null;
+	}
+	
+	override function update( dt:Float )
+	{
+	    counter += dt;
+	    counter_text.text = '$counter';
 	}
 
 	override function onkeyup( event:KeyEvent )
@@ -148,13 +168,11 @@ class Singleplayer extends State
 
 	function characteraction( char:Sprite )
 	{
-		if(!started)
-		{
-			started = true;
-			time = Sys.time();
-		}
+		if(!started) started = true;
+		
 		char.size = new Vector(70,70);
 		Actuate.tween( char.size, 0.2, {x:64,y:64} );
+		
 		var body = char.get("nape").body;
 		
 		var xdist, ydist, normalized_vector;
@@ -167,13 +185,11 @@ class Singleplayer extends State
 
 	function win( e:Dynamic )
 	{
-	    //Find something that will allow web instead of Sys.time()
-		time = Sys.time() - time;
-		if(time < Main.lowscore)
+		if(counter < Main.lowscore)
 		{
-		    Main.lowscore = time;
+		    Main.lowscore = counter;
 		}
-		trace('You win! Your time is $time');
+		trace('You win! Your time is $counter');
 		Main.state.unset("singleplayer");
 		Main.state.set("menu");
 	}
