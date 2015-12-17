@@ -77,8 +77,8 @@ class Singleplayer extends State
 		goal = new Sprite({
 			name: "goal",
 			color: new Color().rgb(0xf0f0f0),
-			size: new Vector( Main.midx*2, 64 ),
-			pos: new Vector( Main.midx, Main.midy*2 )
+			size: new Vector( 64, 64 ),
+			pos: new Vector( Main.midx * 2, 0 )
  		});
 	 	sensor = new Sensor({
 	 		name: "sensor",
@@ -94,7 +94,7 @@ class Singleplayer extends State
 		    name: "node1",
 		    color: new Color().rgb(0x456789),
 		    size: new Vector(64,64),
-		    pos: new Vector(Main.midx+Main.midx / 2, Main.midy / 2)
+		    pos: new Vector(Main.midx, Main.midy)
 		});
 		node1.add(new Sensor({
 		    name: "sensor",
@@ -109,7 +109,7 @@ class Singleplayer extends State
 		    name: "node2",
 		    color: new Color().rgb(0x456789),
 		    size: new Vector(64,64),
-		    pos: new Vector(Main.midx / 2, Main.midy + Main.midy / 2)
+		    pos: new Vector(Main.midx * 2, Main.midy)
 		});
         node2.add(new Sensor({
            name: "sensor",
@@ -150,6 +150,9 @@ class Singleplayer extends State
 	{
 	    counter += dt;
 	    counter_text.text = '$counter';
+	    counter_text.pos = character.pos;
+	    
+	    Luxe.camera.center = character.pos;
 	}
 
 	override function onkeyup( event:KeyEvent )
