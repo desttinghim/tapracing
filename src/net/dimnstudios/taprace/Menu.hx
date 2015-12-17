@@ -20,6 +20,7 @@ class Menu extends State
 	    
 		// TODO(louis): actually learn what this is doing
 	 	Luxe.renderer.clear_color.tween(0.2,{ r:0.06, g:0.075, b:0.098 });
+	 	Luxe.camera.pos = new Vector(0,0);
 	 	
 	 	// TODO(louis): Figure out why this text is not displaying
 		text = new Text({

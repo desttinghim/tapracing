@@ -27,8 +27,11 @@ class Singleplayer extends State
 	var node_goto : Sprite;
 	var node1 : Sprite;
 	var node2 : Sprite;
+	var wall : Sprite;
 	
 	var boxcollider : BoxCollider;
+	var wallcollider : BoxCollider;
+	
 	var sensor : Sensor;
 	var counter_text : Text;
 	
@@ -42,7 +45,7 @@ class Singleplayer extends State
 		
 		Luxe.renderer.clear_color.tween(0.2,{ r:0.06, g:0.075, b:0.098 });
 		Luxe.physics.nape.space.gravity = new Vec2(0,0);
-		Luxe.physics.nape.space.worldLinearDrag = 0.5;
+		Luxe.physics.nape.space.worldLinearDrag = 0.25;
 		
 		// Making character sprite. Most of the stuff I'm passing in is 
 		// arbitrary, some of it is needed. Color and size are needed to make the
@@ -124,6 +127,23 @@ class Singleplayer extends State
         node_goto = node1; //Start path with node1
         //end node creation
         
+        wall = new Sprite({
+            name: "wall",
+            color: new Color().rgb(0x456789),
+            size: new Vector(Main.midx, 64),
+            pos: new Vector(Main.midx, Main.midy + 128)
+        });
+        wallcollider = new BoxCollider({
+            name: "wall",
+            body_type : BodyType.STATIC,
+            material: Material.wood(),
+            x: wall.pos.x,
+            y: wall.pos.y,
+            w: wall.size.x,
+            h: wall.size.y
+        });
+        wall.add(wallcollider);
+        
         
          counter_text = new Text({text: '$counter', pos: new Vector(0,0)});
 	} //onenter
@@ -136,6 +156,10 @@ class Singleplayer extends State
 		character.destroy();
 		character = null;
 		boxcollider = null;
+		
+		wall.destroy();
+		wall = null;
+		wallcollider = null;
 		
 		node1.destroy();
 		node2.destroy();
