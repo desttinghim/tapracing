@@ -5,6 +5,7 @@ import luxe.Sprite;
 import luxe.Vector;
 import luxe.Color;
 import luxe.Input;
+import luxe.tween.Actuate;
 
 import nape.phys.Body;
 import nape.phys.BodyType;
@@ -36,6 +37,9 @@ class Singleplayer extends State
 		Luxe.renderer.clear_color.tween(0.2,{ r:0.06, g:0.075, b:0.098 });
 		Luxe.physics.nape.space.gravity = new Vec2(0,0);
 		
+		// Making character sprite. Most of the stuff I'm passing in is 
+		// arbitrary, some of it is needed. Color and size are needed to make the
+		// sprite visible, but the values of them are arbitrary
 		//Character sprite creation
 		character = new Sprite({
 			name: "character",
@@ -44,6 +48,8 @@ class Singleplayer extends State
 			pos: new Vector(Main.midx, 0),
 			size: new Vector(64, 64)
 		});
+		// Boxcollider is physics component from nape. All of the options need to
+		// be passed in, though body_type and material are completely arbitrary.
 		boxcollider = new BoxCollider({
 			name: "nape",
 			body_type: BodyType.DYNAMIC,
@@ -53,9 +59,13 @@ class Singleplayer extends State
 			w: character.size.x,
 			h: character.size.y
 		});
+		// Adding the physics component to our sprite so they move together and
+		// are actually useful. I'm not sure what would happen if I had the component
+		// sitting around by itself.
 		character.add(boxcollider);
 		//Character sprite creation
 		
+		// Making a goal sprite. 
 		//Goal sprite creation
 		goal = new Sprite({
 			name: "goal",
@@ -83,14 +93,6 @@ class Singleplayer extends State
 		boxcollider = null;
 	}
 
-	override function update( dt:Float )
-	{
-		// if(goal.point_inside_AABB(character.pos))
-		// {
-		// 	win();
-		// }
-	} //update
-
 	override function onkeyup( event:KeyEvent )
 	{
 		if(event.keycode == Main.leftcharacterkey) characteraction(character);
@@ -112,13 +114,20 @@ class Singleplayer extends State
 			started = true;
 			time = Sys.time();
 		}
+		char.size = new Vector(70,70);
+		Actuate.tween( char.size, 0.2, {x:64,y:64} );
 		var body = char.get("nape").body;
 		body.applyImpulse(new Vec2( 0, 100 ), body.position);
 	} //characteraction
 
 	function win( e:Dynamic )
 	{
+	    //Find something that will allow web instead of Sys.time()
 		time = Sys.time() - time;
+		if(time < Main.lowscore)
+		{
+		    Main.lowscore = time;
+		}
 		trace('You win! Your time is $time');
 		Main.state.unset("singleplayer");
 		Main.state.set("menu");

@@ -13,9 +13,14 @@ class Menu extends State
 	
 	override function onenter<T>(_:T)
 	{
-		trace("Menu.onenter");
+	    // TODO(louis): Replace all of this with a mint powered interface
+	    // Eventually, this will be the Menu state mentioned in the structure
+	    // part of the game design document (TapRacingGDD.md)
+	    
+		// TODO(louis): actually learn what this is doing
 	 	Luxe.renderer.clear_color.tween(0.2,{ r:0.06, g:0.075, b:0.098 });
 	 	
+	 	// TODO(louis): Figure out why this text is not displaying
 		text = new Text({
 			text: "Tap Racing: Menu",
 			align: center,
@@ -29,6 +34,7 @@ class Menu extends State
 		 	outline_color: new Color().rgb(0x1d150c)
 		});
 		
+		// Test sprite, because the text didn't work
 		sprite = new Sprite({
 			color: new Color().rgb(0xf0f0f0),
 			size: new Vector(64, 64)
@@ -37,7 +43,7 @@ class Menu extends State
 	
 	override function onleave<T>(_:T)
 	{
-		trace("Menu.onleave");
+	    // Cleaning up variables and sprites
 		text.destroy();
 		text = null;
 		
@@ -47,6 +53,7 @@ class Menu extends State
 	
 	override function update( dt:Float )
 	{
+	    // When the 'leftcharacterkey' is released, go to the singleplayer mode
 		if(Luxe.input.keyreleased(Main.leftcharacterkey))
 		{
 			Main.state.unset("menu");
