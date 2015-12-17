@@ -15,11 +15,13 @@ TODO
         + [?] Input changes (I'm going to need to do actual android testing)
     - [x] Physics
         + [x] Nape, apply impulse when character tapped
-	- [ ] Single Player Mode
+	- [x] Single Player Mode
 	    + [x] Player sprite
 	    + [x] Goal sprite
 	        * [x] Sensor (non-nape) component
         + [x] High scores (mostly)
+    - [ ] Paths
+        + Using node objects/sprites 
     - ~~[ ] Gameplay
 		+ [x] Goal, ends level (But level ending produces crash.)
             * [x] Signal win (Only the right side can win?)

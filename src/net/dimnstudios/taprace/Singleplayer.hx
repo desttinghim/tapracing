@@ -23,6 +23,9 @@ class Singleplayer extends State
 	// Sprites
 	var character : Sprite;
 	var goal : Sprite;
+	var node_goto : Sprite;
+	var node1 : Sprite;
+	var node2 : Sprite;
 	
 	var boxcollider : BoxCollider;
 	var sensor : Sensor;
@@ -36,6 +39,7 @@ class Singleplayer extends State
 		
 		Luxe.renderer.clear_color.tween(0.2,{ r:0.06, g:0.075, b:0.098 });
 		Luxe.physics.nape.space.gravity = new Vec2(0,0);
+		Luxe.physics.nape.space.worldLinearDrag = 0.5;
 		
 		// Making character sprite. Most of the stuff I'm passing in is 
 		// arbitrary, some of it is needed. Color and size are needed to make the
@@ -81,6 +85,41 @@ class Singleplayer extends State
 	 	goal.add(sensor);
 	 	Luxe.events.listen("goal", win);
 		//Goal sprite creation
+		
+		//node creation
+		node1 = new Sprite({
+		    name: "node1",
+		    color: new Color().rgb(0x456789),
+		    size: new Vector(64,64),
+		    pos: new Vector(Main.midx+Main.midx / 2, Main.midy / 2)
+		});
+		node1.add(new Sensor({
+		    name: "sensor",
+		    event: "node1",
+		    triggers: [ character ]
+		}));
+		Luxe.events.listen("node1", function(_) {
+		    node_goto = node2; // When player reaches node1, begin going to node2
+		});
+		
+		node2 = new Sprite({
+		    name: "node2",
+		    color: new Color().rgb(0x456789),
+		    size: new Vector(64,64),
+		    pos: new Vector(Main.midx / 2, Main.midy + Main.midy / 2)
+		});
+        node2.add(new Sensor({
+           name: "sensor",
+           event: "node2",
+           triggers: [ character ]
+        }));
+        Luxe.events.listen("node2", function(_) {
+            node_goto = goal; // Beginn going to goal after reaching node2
+        });
+        
+        
+        node_goto = node1; //Start path with node1
+        //end node creation
 	} //onenter
 
 	override function onleave<T>(_:T)
@@ -117,7 +156,13 @@ class Singleplayer extends State
 		char.size = new Vector(70,70);
 		Actuate.tween( char.size, 0.2, {x:64,y:64} );
 		var body = char.get("nape").body;
-		body.applyImpulse(new Vec2( 0, 100 ), body.position);
+		
+		var xdist, ydist, normalized_vector;
+		xdist = node_goto.pos.x - char.pos.x;
+		ydist = node_goto.pos.y - char.pos.y;
+		normalized_vector = new Vec2(xdist, ydist).normalise();
+		
+		body.applyImpulse(normalized_vector.mul(100), body.position);
 	} //characteraction
 
 	function win( e:Dynamic )

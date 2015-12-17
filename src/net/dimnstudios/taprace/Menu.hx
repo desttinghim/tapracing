@@ -5,10 +5,12 @@ import luxe.Text;
 import luxe.Sprite;
 import luxe.Vector;
 import luxe.Color;
+import luxe.tween.Actuate;
 
 class Menu extends State
 {
 	var text : Text;
+	var lowscore : Text;
 	var sprite : Sprite;
 	
 	override function onenter<T>(_:T)
@@ -22,17 +24,35 @@ class Menu extends State
 	 	
 	 	// TODO(louis): Figure out why this text is not displaying
 		text = new Text({
-			text: "Tap Racing: Menu",
+			text: "tap racing",
 			align: center,
 			align_vertical: center,
 			point_size: 96,
 			letter_spacing: 0,
-			font: Main.font,
-			pos: new Vector(Luxe.screen.mid.x, -171),
+// 			font: Main.font,
+			pos: new Vector(Luxe.screen.mid.x,-171),
 			color: new Color().rgb(0x7f7243),
+			sdf: true,
 			outline: 0.6,
 		 	outline_color: new Color().rgb(0x1d150c)
 		});
+		
+		lowscore = new Text({
+		    text: '${Main.lowscore}',
+		    align: center,
+		    align_vertical: center,
+		    point_size: 72,
+		    letter_spacing: 0,
+		    pos: new Vector(-200, Luxe.screen.mid.y),
+            color: new Color().rgb(0x7f7f7f),
+            sdf: true
+		});
+		
+		
+        Actuate.tween(text.pos, 2, { y:64 })
+               .ease( luxe.tween.easing.Bounce.easeOut );
+        Actuate.tween(lowscore.pos, 2, { x:Main.midx })
+               .ease( luxe.tween.easing.Bounce.easeOut );
 		
 		// Test sprite, because the text didn't work
 		sprite = new Sprite({
@@ -46,6 +66,9 @@ class Menu extends State
 	    // Cleaning up variables and sprites
 		text.destroy();
 		text = null;
+		
+		lowscore.destroy();
+		lowscore = null;
 		
 		sprite.destroy();
 		sprite = null;

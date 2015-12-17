@@ -69,6 +69,6 @@ class Main extends luxe.Game
         // Finally, we set the state to 'menu' (where else would we start?)
         // This sends us to the onenter method of Menu.hx 
         state.set("menu");
+	
 	}
-}
 } //Main
